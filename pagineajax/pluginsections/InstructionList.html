@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+      <meta charset="utf-8">
+      <title>Instruction List</title>
+      <meta name="theme-color" content="#eee">
+      <link rel="stylesheet" type="text/css" href="/css/UbuntuFont.css">
+      <style>
+      		body{font-family: 'Ubuntu', sans-serif;}
+            #tabella{
+            	width:100%;
+            }
+            #tabella, #tabella th, #tabella td{
+                border-spacing: 0;
+                border-collapse: collapse;
+                border: 1px solid black;
+                padding: 2px;
+            }
+        </style>
+   </head>
+   <body align="center">
+      <script>
+         var resp;
+         var request = new XMLHttpRequest();
+         request.open('GET', 'https://logisim.altervista.org/pagineajax/proxy.php', true);
+         request.send(null);
+         request.onreadystatechange = function () {
+             if (request.readyState === 4 && request.status === 200) {
+                 var type = request.getResponseHeader('Content-Type');
+                 if (type.indexOf("text") !== 1) {
+                   resp = request.responseText;
+         var tokens = resp.split(/\n+/g);
+         tabella=document.getElementById("tabella");
+         for(var x = 0; x < tokens.length - 1; x++){
+                 if(tokens[x].length <= 2 || tokens[x].indexOf('_') > -1) 
+                 	continue;
+                 var riga = document.createElement("tr");
+                 var cella0 = document.createElement("th");
+                 var cella1 = document.createElement("th");
+                 var cella2 = document.createElement("th");
+                 tabella.appendChild(riga);
+                 riga.appendChild(cella0);
+                 riga.appendChild(cella1);
+                 riga.appendChild(cella2);
+         
+                 str1 = tokens[x].split(/\s(.+)/)[0];  //everything before the first space
+                 str2 = tokens[x].split(/\s(.+)/)[1];  //everything after the first space
+         
+                 str0 = parseInt(str1 , 16).toString(2);
+                 var testo = document.createTextNode(str0);
+                 cella0.appendChild(testo);
+                 testo = document.createTextNode(str1);
+                 cella1.appendChild(testo);
+                 testo = document.createTextNode(str2); 
+                 cella2.appendChild(testo);
+                   }
+               }
+           }
+         }
+      </script>
+      <h1>INSTRUCTION LIST</h1>
+      <table id="tabella">
+         <tr>
+            <th>BIN</th>
+            <th>HEX</th>
+            <th>Instruction</th>
+         </tr>
+      </table>
+   </body>
+</html>
