@@ -1,116 +1,55 @@
+html
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Logisim</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-        <meta name="description" content="Logisim | Logisim fork | logisim | source | digital simulator | download | jar | exe | changelog | ttl 7400 | digital oscilloscope | dipswitch | switch | rgb led | italian | french | translation | flip flop layout | look and feel | github | sourceforge | forum | bug report | display decoder | 7-segment display decoder | autoupdates | tty | keyboard | zoom | empty template"/>
-        <meta name="keywords" content="Logisim | Logisim fork | logisim | source | digital simulator | download | jar | exe | changelog | ttl 7400 | digital oscilloscope | dipswitch | switch | rgb led | italian | french | translation | flip flop layout | look and feel | github | sourceforge | forum | bug report | display decoder | 7-segment display decoder | autoupdates | tty | keyboard | zoom | empty template"/>
-        <meta name="theme-color" content="#eee">
-        <link rel="stylesheet" type="text/css" href="./css/style.css">
-        <link rel="stylesheet" type="text/css" href="./css/UbuntuFont.css">
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-109826252-1"></script>
-		<script>
- 			window.dataLayer = window.dataLayer || [];
-  			function gtag(){dataLayer.push(arguments);}
-  			gtag('js', new Date());
-  			gtag('config', 'UA-109826252-1');
-		</script>
-    </head>
-    <body>
-        <div class="header" >
-            <div class="sub1">
-                <img class="logo" src="./images/logisim.gif" alt="Logisim">
-            </div>
-            <div class="star"><span class="starmessage">STAR ON GITHUB </span>&#9733;</div>
-            <div class="sub2">
-                <a class="n headpag" value="contacts.html" href="contacts.html">CONTACTS</a>
-                <a class="s headpag" value="home.html">HOME</a>
-                <a class="n headpag" value="plugins.html" href="plugins.html">PLUGINS</a>
-            </div>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description"
+        content="Logisim | Logisim fork | logisim | source | digital simulator | download | jar | exe | changelog | ttl 7400 | digital oscilloscope | dipswitch | switch | rgb led | italian | french | translation | flip flop layout | look and feel | github | sourceforge | forum | bug report | display decoder | 7-segment display decoder | autoupdates | tty | keyboard | zoom | empty template" />
+    <meta name="keywords"
+        content="Logisim | Logisim fork | logisim | source | digital simulator | download | jar | exe | changelog | ttl 7400 | digital oscilloscope | dipswitch | switch | rgb led | italian | french | translation | flip flop layout | look and feel | github | sourceforge | forum | bug report | display decoder | 7-segment display decoder | autoupdates | tty | keyboard | zoom | empty template" />
+    <meta name="theme-color" content="#eee">
+    <title>Logisim</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="sub1">
+            <img class="logo" src="./images/logisim.gif" alt="Logisim">
+            <a class="star" href="https://github.com/Logisim-Ita/Logisim">
+                <span class="starmessage">START ON GITHUB</span>&#9733;
+            </a>
         </div>
-        <div class="content" value="home.html">
-            <h1 class="outline">LOGISIM</h1>
-            <h3>This is our italian fork project based on Logisim :)</h3>
-            <div class="changes" align="center">
-                <div class="ctitle">CHANGELOG:<hr></div>
-                <div class="changelog">
-                	<div class="sectionTitle">CORE STUFF</div>
-                        <a class="changelink" href="userstutorial.html" value="37oD_jn5Nvw">Italian and partial french translation!</a>
-                        <a class="changelink" href="userstutorial.html" value="W4wltFruXJM">Autoupdates!</a>
-                        • Plug-In Store<br>
-                        • Complete new movement system with mouse dragging<br>
-                        • Auto center and Auto zoom when opening new files/circuits or with ctrl-0, double mouse wheel click and with the round button you'll see on the lower-right corner<br>
-                        • Almost infinite canvas, arrows will show you in what direction is the circuit if it's outside of your view<br>
-                        • Zoom in and out using mouse wheel where you're pointing at<br>
-                        • Double click with Edit Tool to label components<br>
-                        • Load libraries from folder at startup (Preferences / Fork)<br>
-                        • Selectable painting refresh rate, default 60Hz (Legacy was 20Hz and sometimes lagging)<br>
-                        • Anti Aliasing, Look and Feel and Fill Component's Background preference<br>
-                        • Clock custom frequency<br>
-                        • Press ESC or DEL to cancel "Add Tool" action, F1 opens Library Reference<br>
-                        • Increased output limit in Analyze Circuit to 32<br>
-                        • Analyze Circuit should calculate table/expression with any kind of component<br>
-                        • Added "Clear Log" button<br>
-                        • Added missing tooltips<br>
-                        • Changed some default values<br>
-                    <hr><div class="sectionTitle">NEW COMPONENTS</div>
-                    	• Wiring ⇒ Programmable Generator
-                        <a class="changelink" href="userstutorial.html" value="4rNTIgntci8">TTL ⇒ 7400, 7402, 7404, 7408, 7432, 7485, 7486, 74165, 74283, 747266</a>
-                        • I/O ⇒ Digital Oscilloscope<br>
-                        • I/O ⇒ Switch<br>
-                        • I/O ⇒ Dip Switch<br>
-                        • I/O ⇒ Slider<br>
-                        • I/O ⇒ RGB LED<br>
-                        • I/O ⇒ Buzzer<br>
-                        • Plexers ⇒ 7-Segment Display Decoder<br>
-                        • Memory ⇒ PLA ROM<br>
-                    <hr><div class="sectionTitle">COMPONENTS CHANGES</div>
-                        • New FF layout<br>
-                        • The Shift Register will show you its internal bits even when set to serial load<br>
-                        • Right click on Pin, Edit Contents and set its value typing the decimal number<br>
-                        • Added Sel pin in Register<br>
-                        • Added Preset pin in Register and Counter<br>
-                        • TTY and Keyboard components can use 16-bit values (UTF-16)<br>
-                    <hr><div class="sectionTitle">NEW ATTRIBUTES</div>
-                        • Controlled Buffer / Inverter: Negate Control Input attribute<br>
-                        • Added Sel Active Level attribute in components with Sel pin<br>
-                        • Priority Plexer "No Input" attribute<br>
-                        • Joystick "Facing" attribute<br>
-                        • Bit Selector "Select location" attribute<br>
-                        • Added Label Color attribute for each component with Label attribute and Text Tool<br>
-                        • Added Label for RAM, ROM and PLA ROM<br>
-                        • FF D, S-R: "Latch" option in Trigger attribute<br>
-                        • New Counter behavior (different pin logic)<br>
-                    <hr><div class="sectionTitle">FIXED BUGS</div>
-                        • Big fixes to Log menu and Log output file<br>
-                        • Big fixes for Text Tool<br>
-                        • Fixed empty template bug introduced in Logisim 2.7.0<br>
-                        • Fixed input positions in wide gates with 4 inputs<br>
-                        • Fixed opening new file in new window with old window not used<br>
-                        • Fixed bugged 32b multiplier<br>
-                        • Some fix from original early version 2.7.2.255<br>
-                </div>
-                <div class="ctitle tutorial"><hr>TUTORIALS:</div>
-                <a class="linktutorial" href="userstutorial.html" style="box-shadow: 4px 0px 0px 0px white; border-radius: 0 0 0 10px">USERS</a>
-                <a class="linktutorial" href="developerstutorial.html" style="border-radius: 0 0 10px 0">DEVELOPERS</a>
-            </div><br>
-            <form method="get" action="https://logisim.altervista.org/LogisimData/Download/download.php">
-                <p><b style="font-size:20px;">EXTENSION:</b><br>
-                <nobr><label class="version">JAR<input type="radio" name="file" value="jar" class="nobox"/></label>
-                    <label class="version">EXE<input type="radio" name="file" value="exe" class="nobox" checked="checked"/></label></nobr></p>
-                <p><span style="font-size:20px;" id="filename"></span><br>
-                    <input type="submit" class='download' value="DOWNLOAD"><br></p>                                        
-            </form>
-            <!--Support the project:<br>
-            <div class="donate">DONATE</div>-->
-            <!--<br><br>
-            Downloading you accept to send data about Logisim usage (visible below)<br>You can disable it in Preference / Fork-->
-            <p><b>DOWNLOADS: <span id="downlaods"></span><br>
-            <!--<br>REAL TIME LOGISIM USERS: <span id="onlineusers"></span><br>
-            <br>UPDATES TO THE LATEST VERSION: <span id="update"></span></b></p> -->
+
+        <div class="sub2">
+            <a class="n" value="" href="">CONTACTS</a>
+            <a class="s" value="">HOME</a>
+            <a class="n" value="" href="">PLUGINS</a>
         </div>
-        <script src="./js/jquery.js"></script>
-        <script src="./js/codice.js"></script>
-    </body>
+    </header>
+
+    <main>
+
+        <div class="container">
+            <h1>LOGISIM</h1>
+            <p>Logisim is a simple and easy to use digital circuit simulator. It is designed for educational purposes and
+                allows users to create and simulate digital circuits using a graphical interface.</p>
+            <p>Logisim is a free and open-source software, which means that anyone can use, modify, and distribute it
+                without any restrictions. It is available for Windows, Mac OS X, and Linux operating systems.</p>
+            <p>Logisim is a powerful tool for learning about digital circuits and computer architecture. It provides a
+                wide range of components, including logic gates, flip-flops, multiplexers, and more. Users can create
+                complex circuits by connecting these components together and simulating their behavior.</p>
+        </div>
+
+    </main>
+
+    <footer>
+
+    </footer>
+    
+</body>
+
 </html>
