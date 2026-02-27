@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Missione Luna - Turbulence</title>
+
+    <style>
+      /* ===== Base ===== */
+      body {
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        font-family: "Segoe UI", sans-serif;
+        background-color: #000;
+      }
+
+      h1 {
+        margin: 20px 0;
+        color: #fff;
+        letter-spacing: 5px;
+      }
+
+      canvas {
+        width: 100%;
+        flex-grow: 1;
+        display: block;
+      }
+
+      kbd {
+        padding: 2px 4px;
+        border: 1px solid #555;
+        border-radius: 3px;
+        background: #333;
+        color: #eee;
+      }
+
+      /* ===== Layout ===== */
+      .left {
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        background-color: #111;
+        border-right: 2px solid #333;
+        z-index: 10;
+      }
+
+      .right {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+          url("background.jpg");
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* ===== Telemetry panel ===== */
+      .telemetry-box {
+        width: 85%;
+        box-sizing: border-box;
+        padding: 20px;
+
+        font-family: "Courier New", monospace;
+        color: #00ff00;
+        text-shadow: 0 0 5px #00ff00;
+
+        border: 1px solid #00ff0033;
+        background: rgba(0, 20, 0, 0.9);
+      }
+
+      .data-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 1rem;
+      }
+
+      .difficulty-container {
+        width: 100%;
+        margin-top: 20px;
+        color: #00ff00;
+        font-size: 0.8rem;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        cursor: pointer;
+        accent-color: #00ff00;
+      }
+
+      /* ===== Fuel ===== */
+      .fuel-bar {
+        width: 100%;
+        height: 15px;
+        margin-top: 5px;
+
+        border: 1px solid #00ff00;
+        background: #002200;
+      }
+
+      #fuel-fill {
+        width: 100%;
+        height: 100%;
+        background-color: #00ff00;
+      }
+
+      /* ===== Status ===== */
+      .status-light {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 10px;
+        padding: 15px;
+
+        text-align: center;
+        font-weight: bold;
+
+        background-color: #333;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+      }
+
+      /* Stato “motori attivi” */
+      .status-light.active {
+        background-color: #ffaa00;
+        color: #000;
+        box-shadow: 0 0 15px #ffaa00;
+      }
+
+      /* Stato “allarme” (carburante esaurito) */
+      .status-light.alarm {
+        background-color: #aa0000;
+        color: #fff;
+        animation: blink 0.5s infinite;
+      }
+
+      /* Lampeggio per lo stato di allarme */
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* ===== Button ===== */
+      .start-simulations {
+        width: 100%;
+        margin-top: 10px;
+        padding: 15px;
+
+        cursor: pointer;
+        font-weight: bold;
+
+        background-color: #004400;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+      }
+
+      /* Stato “simulazione attiva” (il bottone diventa RESET) */
+      .start-simulations.active {
+        background-color: #aa0000;
+        color: #fff;
+      }
+
+      /* ===== Help text ===== */
+      .controls-hint {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.7rem;
+        color: #666;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Pannello sinistro: telemetria e controlli -->
+    <div class="left">
+      <div class="telemetry-box">
+        <h2 id="log-title">LOG TELEMETRIA</h2>
+        <hr />
+
+        <!-- Valori aggiornati in tempo reale via JS -->
+        <div class="data-row">
+          <span>ALTITUDINE:</span> <b id="alt-val">0</b> m
+        </div>
+        <div class="data-row">
+          <span>V. VERTICALE:</span> <b id="vy-val">0.0</b> m/s
+        </div>
+        <div class="data-row">
+          <span>V. ORIZZONTALE:</span> <b id="vx-val">0.0</b> m/s
+        </div>
+
+        <!-- Slider per modulare la “forza” della turbolenza -->
+        <div class="difficulty-container">
+          <span>INTENSITÀ TURBOLENZA: <b id="diff-val">5</b></span>
+          <input type="range" id="difficulty-slider" min="0" max="10" value="5" />
+        </div>
+
+        <br />
+
+        <!-- Barra carburante (riempimento aggiornato in percentuale via JS) -->
+        <div class="fuel-container">
+          <span>FUEL TANK:</span>
+          <div class="fuel-bar"><div id="fuel-fill"></div></div>
+        </div>
+
+        <br />
+
+        <!-- Stato dinamico: inerzia / motori / allarme -->
+        <div class="status-light" id="status-display">SISTEMI PRONTI</div>
+
+        <!-- Avvio/Reset simulazione (Space replica il click) -->
+        <button class="start-simulations" id="start-simulations">
+          AVVIA (SPACE)
+        </button>
+
+        <!-- Piccola legenda comandi -->
+        <p class="controls-hint">
+          COMANDI:
+          <kbd>W</kbd><kbd>A</kbd><kbd>D</kbd> o
+          <kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd>
+        </p>
+      </div>
+    </div>
+
+    <!-- Pannello destro: titolo e area di simulazione (canvas) -->
+    <div class="right">
+      <h1>MISSIONE LUNA</h1>
+      <canvas id="simulation"></canvas>
+    </div>
+
+    <script>
+      /* ===========================
+         RIFERIMENTI DOM (UI)
+         =========================== */
+      const statusDisplay = document.getElementById("status-display");
+      const logTitle = document.getElementById("log-title");
+      const startBtn = document.getElementById("start-simulations");
+      const fuelFill = document.getElementById("fuel-fill");
+
+      // Canvas + contesto di disegno 2D
+      const simulationZone = document.getElementById("simulation");
+      const ctx = simulationZone.getContext("2d");
+
+      // Slider turbolenza e label valore
+      const diffSlider = document.getElementById("difficulty-slider");
+      const diffValDisplay = document.getElementById("diff-val");
+
+      /* ===========================
+         STATO INIZIALE DEL LANDER
+         =========================== */
+      const INITIAL_STATE = {
+        x: 0, // posizione X (px canvas)
+        y: 50, // posizione Y (px canvas)
+        vx: 0, // velocità orizzontale
+        vy: 0, // velocità verticale
+        fuel: 100, // carburante in percentuale
+        isLanded: false, // atterraggio avvenuto
+        hasCrashed: false, // crash (atterraggio non sicuro)
+        thrustUp: false, // motore principale attivo
+        thrustLeft: false, // spinta laterale sinistra
+        thrustRight: false, // spinta laterale destra
+      };
+
+      // Stato corrente (mutabile) del lander
+      let lander = { ...INITIAL_STATE };
+
+      /* ===========================
+         COSTANTI DI FISICA / GAMEPLAY
+         =========================== */
+      const GRAVITY = 1.62; // gravità lunare (valore “game-like”)
+      const THRUST_V = 4.8; // potenza del motore verticale
+      const THRUST_H = 2.5; // potenza dei motori orizzontali
+      const SAFE_V = 2.2; // soglia max velocità verticale per touchdown sicuro
+      const SAFE_H = 3.0; // soglia max velocità orizzontale per touchdown sicuro
+
+      // Parametri “turbolenza” (vento laterale)
+      const TURBULENCE_STRENGTH = 0.5; // (attualmente non usato: lasciato per alternative)
+      const TURBULENCE_CHANGE_INTERVAL = 2; // ogni N secondi cambia direzione
+
+      let turbulenceDirection = 1; // 1 destra, -1 sinistra
+      let turbulenceTimer = 0; // accumula tempo per decidere quando cambiare direzione
+      let turbulencePower = 5; // valore controllato dallo slider
+
+      // Aggiorna potenza turbolenza in tempo reale
+      diffSlider.addEventListener("input", () => {
+        turbulencePower = diffSlider.value;
+        diffValDisplay.textContent = turbulencePower;
+      });
+
+      /* ===========================
+         INPUT DA TASTIERA
+         =========================== */
+      let lastTime = performance.now(); // per calcolare dt tra frame (movimento indipendente dagli FPS)
+      const keys = {};
+
+      window.addEventListener("keydown", (e) => {
+        keys[e.code] = true;
+
+        // Space avvia/resetta senza scrollare la pagina
+        if (e.code === "Space") {
+          e.preventDefault();
+          startBtn.click();
+        }
+      });
+
+      window.addEventListener("keyup", (e) => {
+        keys[e.code] = false;
+      });
+
+      /* ===========================
+         RESET: riporta il gioco allo stato iniziale
+         =========================== */
+      function resetMission() {
+        // Riposiziona il lander al centro del canvas
+        lander = { ...INITIAL_STATE, x: simulationZone.width / 2 };
+
+        // Ripristina UI testuale e colori
+        logTitle.textContent = "LOG TELEMETRIA";
+        logTitle.style.color = "#00ff00";
+
+        statusDisplay.textContent = "SISTEMI PRONTI";
+        statusDisplay.className = "status-light";
+
+        // Ripristina barra carburante
+        fuelFill.style.backgroundColor = "#00ff00";
+        fuelFill.style.width = "100%";
+
+        // Direzione turbolenza casuale ad ogni reset
+        turbulenceDirection = Math.random() < 0.5 ? 1 : -1;
+        turbulenceTimer = 0;
+      }
+
+      /* ===========================
+         BOTTONE AVVIA / RESET
+         =========================== */
+      startBtn.addEventListener("click", () => {
+        // Se si è atterrati oppure il bottone è già in modalità RESET, allora resetta
+        const isReset = lander.isLanded || startBtn.textContent.includes("RESET");
+
+        if (isReset) {
+          resetMission();
+          startBtn.classList.remove("active");
+          startBtn.textContent = "AVVIA (SPACE)";
+          return;
+        }
+
+        startBtn.classList.add("active");
+        startBtn.textContent = "RESET (SPACE)";
+      });
+
+      /* ===========================
+         GAME LOOP
+         =========================== */
+      function update(currentTime) {
+        // Delta time in secondi (stabilizza la fisica a prescindere dagli FPS)
+        const dt = (currentTime - lastTime) / 1000;
+        lastTime = currentTime;
+
+        // Mantiene il canvas “sincronizzato” con le dimensioni visibili (responsive)
+        // NOTA: bisogna settare width/height reali del canvas, non solo CSS width/height.
+        if (simulationZone.width !== simulationZone.clientWidth) {
+          simulationZone.width = simulationZone.clientWidth;
+          simulationZone.height = simulationZone.clientHeight;
+          lander.x = simulationZone.width / 2; // ricentra il lander dopo resize
+        }
+
+        // Altezza del terreno (offset per lasciare spazio alla “collina” disegnata)
+        const groundLevel = simulationZone.height - 110;
+
+        // Simula solo se “attivo” e non si è ancora atterrati
+        if (startBtn.classList.contains("active") && !lander.isLanded) {
+          // Legge input e abilita thrust solo se c'è carburante
+          lander.thrustUp = (keys["KeyW"] || keys["ArrowUp"]) && lander.fuel > 0;
+          lander.thrustLeft =
+            (keys["KeyA"] || keys["ArrowLeft"]) && lander.fuel > 0;
+          lander.thrustRight =
+            (keys["KeyD"] || keys["ArrowRight"]) && lander.fuel > 0;
+
+          /* --- Turbolenza --- */
+          turbulenceTimer += dt;
+
+          // Cambia direzione ogni TURBULENCE_CHANGE_INTERVAL secondi
+          if (turbulenceTimer >= TURBULENCE_CHANGE_INTERVAL) {
+            turbulenceDirection = Math.random() < 0.5 ? 1 : -1;
+            turbulenceTimer = 0;
+          }
+
+          // Forza laterale proporzionale allo slider (0..10) e direzione (+/-)
+          const currentForce = turbulencePower * 0.25 * turbulenceDirection;
+          lander.vx += currentForce * dt;
+
+          /* --- Fisica verticale --- */
+          if (lander.thrustUp) {
+            // Spingi
+            lander.vy -= (THRUST_V - GRAVITY) * dt;
+            lander.fuel -= 18 * dt;
+          } else {
+            // Caduta libera
+            lander.vy += GRAVITY * dt;
+            lander.fuel -= 0.1 * dt;
+          }
+
+          /* --- Fisica orizzontale --- */
+          if (lander.thrustLeft) {
+            lander.vx -= THRUST_H * dt;
+            lander.fuel -= 6 * dt;
+          }
+
+          if (lander.thrustRight) {
+            lander.vx += THRUST_H * dt;
+            lander.fuel -= 6 * dt;
+          }
+
+          // Aggiorna posizioni
+          lander.y += lander.vy * 50 * dt;
+          lander.x += lander.vx * 50 * dt;
+
+          // Clamp carburante
+          lander.fuel = Math.max(0, lander.fuel);
+
+          /* --- UI status --- */
+          if (lander.fuel <= 0) {
+            statusDisplay.textContent = "CARBURANTE ESAURITO";
+            statusDisplay.className = "status-light alarm";
+          } else if (lander.thrustUp || lander.thrustLeft || lander.thrustRight) {
+            statusDisplay.textContent = "MOTORI ATTIVI";
+            statusDisplay.className = "status-light active";
+          } else {
+            statusDisplay.textContent = "INERZIA";
+            statusDisplay.className = "status-light";
+          }
+
+          // Aggiorna barra carburante
+          fuelFill.style.width = lander.fuel + "%";
+
+          // Sotto 20% diventa rossa
+          if (lander.fuel < 20) {
+            fuelFill.style.backgroundColor = "#ff0000";
+          }
+
+          // Pacman orizzontale
+          if (lander.x < 0) lander.x = simulationZone.width;
+          if (lander.x > simulationZone.width) lander.x = 0;
+
+          /* --- Collisione con il terreno --- */
+          if (lander.y >= groundLevel) {
+            lander.y = groundLevel;
+            lander.isLanded = true;
+
+            // Condizioni di “touchdown” sicuro
+            const isCentred = Math.abs(lander.x - simulationZone.width / 2) < 60;
+            const isVSafe = lander.vy <= SAFE_V;
+            const isHSafe = Math.abs(lander.vx) <= SAFE_H;
+
+            if (isVSafe && isHSafe && isCentred) {
+              logTitle.textContent = "MISSIONE COMPIUTA!";
+              logTitle.style.color = "#00ff00";
+              statusDisplay.textContent = "TOUCHDOWN OK";
+            } else {
+              lander.hasCrashed = true;
+              logTitle.textContent = !isCentred
+                ? "FUORI PIATTAFORMA"
+                : "IMPATTO VIOLENTO";
+              logTitle.style.color = "#ff0000";
+              statusDisplay.textContent = "NAVETTA DISTRUTTA";
+            }
+          }
+        }
+
+        /* ===========================
+           TELEMETRIA
+           =========================== */
+        document.getElementById("alt-val").textContent = Math.max(
+          0,
+          Math.round(groundLevel - lander.y), // altezza
+        );
+
+        document.getElementById("vy-val").textContent = lander.vy.toFixed(2);
+        document.getElementById("vx-val").textContent = lander.vx.toFixed(2);
+
+        // Disegna il frame corrente e pianifica il prossimo
+        draw();
+        requestAnimationFrame(update);
+      }
+
+      function drawLander() {
+        ctx.save();
+        ctx.translate(lander.x, lander.y); // disegna il lander
+
+        // Fiammate dei motori
+        if (!lander.isLanded && lander.fuel > 0) {
+          ctx.fillStyle = "orange";
+
+          if (lander.thrustUp) {
+            // Fiamma principale
+            ctx.beginPath();
+            ctx.moveTo(-8, 10);
+            ctx.lineTo(0, 20 + Math.random() * 20);
+            ctx.lineTo(8, 10);
+            ctx.fill();
+          }
+
+          if (lander.thrustLeft) {
+            // Fiamma lato destro
+            ctx.beginPath();
+            ctx.moveTo(15, -5);
+            ctx.lineTo(25 + Math.random() * 15, 0);
+            ctx.lineTo(15, 5);
+            ctx.fill();
+          }
+
+          if (lander.thrustRight) {
+            // Fiamma lato sinistro
+            ctx.beginPath();
+            ctx.moveTo(-15, -5);
+            ctx.lineTo(-25 - Math.random() * 15, 0);
+            ctx.lineTo(-15, 5);
+            ctx.fill();
+          }
+        }
+
+        // Indicatore direzione turbolenza
+        if (!lander.isLanded && turbulencePower > 0) {
+          ctx.strokeStyle = "#00ff00";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+
+          const arrowX = turbulenceDirection * 30;
+          ctx.moveTo(0, -40);
+          ctx.lineTo(arrowX, -40);
+          ctx.stroke();
+        }
+
+        // Corpo del lander
+        ctx.fillStyle = lander.hasCrashed ? "#422" : "#aab";
+        ctx.fillRect(-15, -15, 30, 25);
+
+        // Gambe
+        ctx.strokeStyle = lander.hasCrashed ? "#200" : "white";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        if (!lander.hasCrashed) {
+          ctx.moveTo(-15, 5);
+          ctx.lineTo(-25, 20);
+          ctx.moveTo(15, 5);
+          ctx.lineTo(25, 20);
+        } else {
+          ctx.moveTo(-15, 5);
+          ctx.lineTo(-30, 0);
+          ctx.moveTo(15, 5);
+          ctx.lineTo(20, -5);
+        }
+
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function draw() {
+        const w = simulationZone.width;
+        const h = simulationZone.height;
+
+        // Pulisce il frame precedente
+        ctx.clearRect(0, 0, w, h);
+
+        // Terreno
+        const g = ctx.createLinearGradient(0, h - 100, 0, h);
+        g.addColorStop(0, "#555");
+        g.addColorStop(1, "#111");
+
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(0, h);
+        ctx.quadraticCurveTo(w / 2, h - 130, w, h);
+        ctx.lineTo(w, h);
+        ctx.fill();
+
+        // Piattaforma di atterraggio
+        ctx.fillStyle = "red";
+        ctx.fillRect(w / 2 - 60, h - 88, 120, 6);
+
+        // Disegna il lander sopra la scena
+        drawLander();
+      }
+
+      // Avvia il loop di animazione
+      requestAnimationFrame(update);
+    </script>
+  </body>
+</html>

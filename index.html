@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Work Dashboard</title>
+    <style>
+      :root {
+        --bg-color: #0b0d17;
+        --card-bg: #1e2235;
+        --text-color: #ffffff;
+        --accent: #00d4ff;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      h1 {
+        margin-top: 50px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .container {
+        display: flex;
+        gap: 20px;
+        padding: 40px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .project-card {
+        position: relative;
+        width: 300px;
+        height: 200px;
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition:
+          transform 0.3s ease,
+          border-color 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .project-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--accent);
+      }
+
+      /* Immagine di sfondo */
+      .card-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        filter: brightness(0.6);
+        z-index: 1;
+      }
+
+      /* Overlay testo */
+      .card-title {
+        position: relative;
+        z-index: 2;
+        background: rgba(0, 0, 0, 0.7);
+        width: 100%;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: white;
+        backdrop-filter: blur(5px);
+      }
+
+      .no-image {
+        background: linear-gradient(45deg, #2c3e50, #000000);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>I Miei Progetti</h1>
+
+    <div class="container" id="menu-container"></div>
+
+    <script>
+      const projects = [
+        {
+          folder: "Moon-landing-simulation",
+          title: "Simulatore Allunaggio",
+          image: "./Moon-landing-simulation/allunaggio.avif",
+        },
+        /*,
+            {
+                folder: "steam-who",
+                title: "STEAM Who?",
+                image: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?auto=format&fit=crop&w=400"
+            },
+            {
+                folder: "say-hi",
+                title: "SayHi! Chatbot",
+                image: "https://images.unsplash.com/photo-1531746790731-6c2079ee3f08?auto=format&fit=crop&w=400"
+            }*/
+      ];
+
+      const container = document.getElementById("menu-container");
+
+      projects.forEach((project) => {
+        // Creo il link
+        const card = document.createElement("a");
+        card.href = `./${project.folder}/index.html`; // Punta al file index.html dentro la cartella
+        card.className = "project-card";
+
+        // Creo lo sfondo
+        const bg = document.createElement("div");
+        bg.className = "card-bg";
+        if (project.image) {
+          bg.style.backgroundImage = `url('${project.image}')`;
+        } else {
+          bg.classList.add("no-image");
+        }
+
+        // Creo il titolo
+        const title = document.createElement("div");
+        title.className = "card-title";
+        title.textContent = project.title;
+
+        // Assemblaggio
+        card.appendChild(bg);
+        card.appendChild(title);
+        container.appendChild(card);
+      });
+    </script>
+  </body>
+</html>
