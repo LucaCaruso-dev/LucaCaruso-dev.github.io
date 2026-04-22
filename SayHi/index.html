@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SayHi! — AI Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay">
+    <div class="loader-box">
+      <div class="loader-rings">
+        <div></div><div></div><div></div>
+      </div>
+      <p class="loader-title">SayHi!</p>
+      <p class="loader-sub" id="loader-text">Initializing AI model…</p>
+    </div>
+  </div>
+
+  <!-- App Shell -->
+  <div class="app">
+
+    <!-- Sidebar: Context Panel -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-label">Knowledge Base</span>
+        <button id="toggle-sidebar" class="icon-btn" title="Collapse panel">&#10094;</button>
+      </div>
+      <p class="sidebar-hint">The chatbot will answer <strong>only</strong> based on the text you enter below.</p>
+      <textarea
+        id="context-area"
+        placeholder="Paste the text the chatbot should use as its knowledge source…"
+        spellcheck="false"
+      ></textarea>
+      <div class="sidebar-footer">
+        <button id="clear-context-btn" class="ghost-btn">Clear</button>
+        <button id="apply-context-btn" class="primary-btn">Apply context</button>
+      </div>
+    </aside>
+
+    <!-- Sidebar collapsed tab -->
+    <button class="sidebar-tab hidden" id="sidebar-tab" title="Expand panel">
+      &#10095; <span>Context</span>
+    </button>
+
+    <!-- Main Chat Area -->
+    <main class="chat-area">
+
+      <!-- Top bar -->
+      <header class="chat-header">
+        <div class="chat-brand">
+          <span class="brand-dot"></span>
+          <span class="brand-name">SayHi!</span>
+        </div>
+        <div id="status-badge" class="status-badge loading">
+          <span class="status-dot"></span>
+          <span id="status-text">Loading…</span>
+        </div>
+      </header>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <!-- Input bar -->
+      <div class="chat-input-bar">
+        <textarea
+          id="user-input"
+          rows="1"
+          placeholder="Ask a question… (Enter to send)"
+          disabled
+        ></textarea>
+        <button id="send-btn" disabled title="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module" src="index.js"></script>
+</body>
+</html>
